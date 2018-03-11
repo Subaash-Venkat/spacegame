@@ -29,7 +29,14 @@ public class DemoServlet extends HttpServlet {
       // Reset hit counter.
       hitCount = 0;
    } 
-  hitCount++; 
+  
+  
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws IOException {
+    resp.setContentType("text/plain");
+    resp.getWriter().println("{ \"name\": \"Swethakannan\" }");
+    hitCount++; 
       PrintWriter out = response.getWriter();
       String title = "Total Number of Hits";
       String docType = "<!doctype html public \"-//w3c//dtd html 4.0 " + "transitional//en\">\n";
@@ -43,11 +50,5 @@ public class DemoServlet extends HttpServlet {
             "</body>
          </html>"
       );
-  
-  @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
-    resp.setContentType("text/plain");
-    resp.getWriter().println("{ \"name\": \"Swethakannan\" }");
   }
 }
