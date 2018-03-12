@@ -17,22 +17,13 @@
 package myapp;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class DemoServlet extends HttpServlet {
-  
-  private int hitCount; 
 
-   public void init() { 
-      // Reset hit counter.
-      hitCount = 0;
-   } 
-  
-  
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
