@@ -2,68 +2,152 @@
 <html>
   <head>
     <title>App Engine Demo</title>
+
+     <script>
+    $('.push').on('mousedown', function(e) {
+  e.preventDefault();
+  var $this = $(this);
+  var id =  $this.attr('id');
+    if (!$this.hasClass('mousedown'))   $this.addClass('mousedown');
+  var x = e.pageX;
+  var y = e.pageY;
+  var bpx = parseFloat($this.css('background-position-x'));
+  var bpy = parseFloat($this.css('background-position-y'));
+  $this.css('cursor','pointer');
+  $this.on('mousemove', function(e) {
+    if (!$this.hasClass('mousemove'))   $this.addClass('mousemove');
     
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    if (e.which===0) {
+      stopDrag(e, $this);
+      return false;
+    }
+     var xd = x-e.pageX;
+     var yd = y-e.pageY;
+    var sVal = (bpx-xd)+'px '+(bpy-yd)+'px';
+    storage(id, sVal, true);
+$this.css('background-position',sVal);
+})
+}).on('mouseup, mouseout', function(e) {
+  stopDrag(e, $(this));
+}).on('dblclick', function(e) {
+  var $this = $(this);
+  e.preventDefault();
+  var id =  $this.attr('id');
+  var iNo = $this.data('no');
+  var ix = (iNo % 3)*-300;
+  var iy = parseInt(iNo/3)*-300;
+  var sVal = ix+'px '+iy+'px';
+  storage(id, sVal, true);
+  $(this).css('background-position',sVal);
+  stopDrag(e, $(this));
+})
+
+function stopDrag(e, $this) {
+  $this.unbind('mousemove');
+  $this.css('cursor','default');
+  $this.removeClass('mousemove mousedown');
+}
+
+function storage(sId, sVal, bForce) {
+
+var retrievedObject = localStorage.getItem(sId);
+  if (!retrievedObject || !!bForce) {
+    localStorage.setItem(sId, JSON.stringify(sVal));
+    retrievedObject = sVal;
+  } else {
+    retrievedObject = JSON.parse(retrievedObject);
+  }
+
+  return retrievedObject;
+
+}
+
+var idPrefix = '';
+function initImage(sImg) {
+$('.push').each(function(i) {
+  var $this =  $(this);
+    if (typeof sImg!='undefined') $this.css('background-image', 'url('+sImg+')');
+  if (i===0) {
+    idPrefix = $this.css('background-image');
+  }
+  var id = idPrefix+i;
+  $this.attr('id', id).data('no',i);
+  var rand = storage(id, (Math.random()*300)+'px '+(Math.random()*300)+'px');
+  $this.css('background-position', rand)
+})
+}
+var images = [
+ 'https://dl.dropboxusercontent.com/u/3260327/vff.png', 'https://dl.dropboxusercontent.com/u/3260327/ferieLukket2013.jpg',
+  'https://dl.dropboxusercontent.com/u/3260327/danmark.png','https://dl.dropboxusercontent.com/u/3260327/primy.jpg'
+  
+];
+
+function init() {
+var img = images[parseInt(Math.random()*images.length)];
+initImage(img);  
+
+}
+
+init();
+
+    </script>
+
+
+
+
     <style>
-      * {
-	margin: 0;
-	padding: 0;
+     * {
+  margin: 0px;
+  padding: 0px; 
+  
+}
+.outer {  
+  width: 900px; 
+  outline: solid 1px white;
+  height: 900px;
+}
+.push {
+  float: left; 
+  background-repeat: no-repeat; 
+  width: 300px;
+  height: 300px; 
+display: inline-block; 
+  cursor: -webkit-grab;
+}
+.mousemove {
+  box-shadow: 0px 0px 14px black;
+    cursor: -webkit-grabbing;
+    cursor: -moz-grabbing;
+}
+.mousedown {
+  box-shadow: 0px 0px 4px rgba(0,0,0,.4);
+    transition: background-position .01s;
+    cursor: -webkit-grabbing;
+    cursor: -moz-grabbing;
+}
 }
 
-body {
-	background-color: #f0db4f;
-}
-
-h1, p {
-	font-family: sans-serif;
-	text-align: center;
-	color: #323330;
-	font-size:  100px;
-}
-
-
-p {
-	font-size: 30px;
-}
-
-#output, #container {
-    display: flex;
-    justify-content: center;
-    margin-top: 100px;
-}
-
-
-input {
-    background-color: #eee;
-    border: none;
-    font-family: sans-serif;
-    color: #000;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 30px;
-}
     </style>
   </head>
   <body>
-    <div id="result">Loading...</div>
+   
 
-    <script>
-$(document).ready(function() {
-  $.getJSON('/demo', function(data) {
-    $('#result').html("Hello, " + data.name);
-  });
-});
-      
-      <div id="output"></div>
-      
-<div id="container">
-    <input type="text" id="input" value="">
+
+    <div class="container fluid">
+  <div class="row">
+    <h1>Dragging image background</h1>
+    <blockquote>I wanted to create a simple way to be able to drag background images around inside an element, and decided to create a simple game in the process :-)
+- Now also with localStorage and more images, plus cheat: dblclick to position automatically :-)</blockquote>
+  </div>
+  <div class="row"><a href="javascript:(function() {init()})();">Get random image</a>
+<div class="outer">
+<div class="push"></div><div class="push"></div><div class="push"></div>
+<div class="push"></div><div class="push"></div><div class="push"></div>
+<div class="push"></div><div class="push"></div><div class="push"></div>
+</div></div>
 </div>
 
-<!-- jquery for enter key press -->      
-<script src="https://code.jquery.com/jquery-3.0.0.js" integrity="sha256-jrPLZ+8vDxt2FnE1zvZXCkCcebI/C8Dt5xyaQBjxQIo=" crossorigin="anonymous"></script>
-    </script>
+ 
+
   </body>
 </html>
